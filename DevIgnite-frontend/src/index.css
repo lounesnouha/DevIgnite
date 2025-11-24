@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+@import "tailwindcss";
 
 :root {
   --primary-bg-color: #0B0E11; 
   --primary-text-color: #F3F7FE; 
-  --body-font: Arial, sans-serif;
+  --body-font: 'Quicksand', sans-serif; ;
   --titles-font: 'quicksand', sans-serif;
 }
 
