@@ -7,6 +7,7 @@ body{
   background-color: var(--primary-bg-color);
   color: var(--primary-text-color);
   font-family: Quicksand;
+  color : white;
 }
 button
 {
