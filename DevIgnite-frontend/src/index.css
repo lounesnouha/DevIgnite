@@ -4,11 +4,12 @@
 :root {
   --primary-bg-color: #0B0E11; 
   --primary-text-color: #F3F7FE; 
-  --body-font: 'Quicksand', sans-serif; ;
+  --body-font: Arial, sans-serif;
   --titles-font: 'quicksand', sans-serif;
 }
 
 body{
   background-color: var(--primary-bg-color);
   color: var(--primary-text-color);
+  font-family: Quicksand;
 }
