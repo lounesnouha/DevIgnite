@@ -14,9 +14,9 @@ const Section = ({icon, departement, className}) => {
   return (
     <div className={className}>
       <button className='p cursor-pointer w-full'>
-      <div className='flex items-center justify-start gap-4 py-2 pr-40'>
+      <div className='flex items-center gap-4 py-2 pr-40'>
         <img src={icon} alt="icon" />
-        <p className='text-white font-bold'>{departement}</p>
+        <p className='text-white font-bold whitespace-nowrap'>{departement}</p>
       </div>
       </button>
 
@@ -27,7 +27,7 @@ const Section = ({icon, departement, className}) => {
 
 const Sidebar = () => {
   return (
-    <section className='flex flex-col m-4 ml-8 '>
+    <section className='flex flex-col m-4 ml-8 border-r pr-15 border-gray-500'>
         <div className='flex gap-4 items-center mb-9'>
           <img src={Logo} alt="" />
           <p className='font-bold'>Cse<span className='text-[#FFD429]'>Hub</span></p>
@@ -45,7 +45,7 @@ const Sidebar = () => {
 
         </div>
         <div className='mt-7'>
-        <Section  icon={Setting} departement="Settings"></Section>
+        <Section icon={Setting} departement="Settings"></Section>
         </div>
     </section>
   )

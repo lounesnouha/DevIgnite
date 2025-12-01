@@ -1,11 +1,12 @@
 import './App.css'
 import Sidebar from './components/sidebar'
-import Post from './components/Post'
+import Posts from './components/Post'
 
 function App() {
   return (
     <div className='flex'>
      <Sidebar></Sidebar>
+     <Posts></Posts>
     </div>
     
   )
