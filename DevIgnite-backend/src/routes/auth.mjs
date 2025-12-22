@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import {body, validationResult, matchedData, checkSchema} from 'express-validator';
+import {validationResult, matchedData, checkSchema} from 'express-validator';
 import { createUserValidationSchema } from "../utils/validationSchema.mjs";
 import {loginValidation} from '../utils/validationSchema.mjs';
 import { tokenValidationSchema } from '../utils/validationSchema.mjs';
@@ -38,9 +38,8 @@ router.post("/register", checkSchema(createUserValidationSchema),async (req,res)
         const accessToken= jwt.sign(userPayload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20min'});
         const refreshToken = jwt.sign(userPayload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'});
 
-        await RefreshToken.deleteMany({ userId: savedUser._id });
         await RefreshToken.create({
-            userId: savedUser._id,
+            userID: savedUser._id,
             token: refreshToken, 
             expiresAt: new Date(Date.now() + 7*24*60*60*1000)
         })
@@ -77,9 +76,9 @@ router.post("/login", checkSchema(loginValidation), async (req,res)=>{
         const accessToken= jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20min'});
         const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'});
 
-        await RefreshToken.deleteMany({ userId: findUser._id });
+        await RefreshToken.deleteMany({ userID: findUser._id });
         await RefreshToken.create({
-            userId: findUser._id,
+            userID: findUser._id,
             token: refreshToken, 
             expiresAt: new Date(Date.now() + 7*24*60*60*1000)
         })
@@ -118,7 +117,7 @@ router.post("/refresh", checkSchema(tokenValidationSchema),  async (req,res)=>{
         jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user)=>{
             if (err) return res.status(403).json({msg: "Invalid or Expired token"});
 
-            const accessToken = jwt.sign({userID: user.userID}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20min'});
+            const accessToken = jwt.sign({userID: user.userID}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20m'});
             res.status(200).json({accessToken});
         })
     }catch(err){
@@ -127,18 +126,13 @@ router.post("/refresh", checkSchema(tokenValidationSchema),  async (req,res)=>{
     }
 })
 
-router.post("/logout", checkSchema(tokenValidationSchema), async (req,res)=>{
-    const errors = validationResult(req);
-    if(!errors.isEmpty()) return res.status(400).json({errors: errors.array()});
-
-    const {token} = matchedData(req);
-
+router.post("/logout", authenticateToken, async (req,res)=>{
     try{
-        const deleted = await RefreshToken.deleteOne({token});
+        const deleted = await RefreshToken.deleteOne({ userID: req.user.userID });
         if (deleted.deletedCount === 0) 
-            return res.status(403).json({msg: "Invalid refresh token"});
+            return res.status(403).json({msg: "No active sessions found"});
 
-        res.status(200).json({msg: "Logged out successfully"});
+        res.status(200).json({msg: "Logged out successfully", sessionsCleared: deleted.deletedCount });
     }catch(err){
         console.log(err);
         res.status(500).json({error: "Server error"});
