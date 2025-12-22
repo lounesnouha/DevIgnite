@@ -45,3 +45,13 @@ export const loginValidation = {
         isString: true,
     }
 };
+
+export const tokenValidationSchema = {
+    token: {
+        notEmpty: {
+            errorMessage: "Token is required",
+        },
+        isString: true,
+        trim: true,
+    }
+}
