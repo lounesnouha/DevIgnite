@@ -13,7 +13,7 @@ function Profile() {
     };
 
   return (
-    <div className="font-[quicksand] font-bold flex flex-col text-[#F3F7FE] p-6 ">
+    <div className="font-[quicksand] font-bold flex flex-col text-[#F3F7FE] p-6  ">
       <h1 className="text-4xl font-black">Profile</h1>
       <div className="flex flex-col justify-center gap-20 mt-12 w-lg">   
         <div className="flex flex-col justify-center items-center gap-2">
@@ -23,30 +23,30 @@ function Profile() {
 
         <div>
             <div className="flex flex-col justify-between  w-full">
-                <div onClick={toggle} className="flex justify-between items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-2 cursor-pointer text-xl" > 
+                <div onClick={toggle} className="flex justify-between items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-2 cursor-pointer text-xl rounded-lg" > 
                     <h2>Following</h2>
                     <img src={arrow} alt="arrow" />
                 </div>
                 {open && (
                     <div className="flex flex-wrap gap-4">
-                        <FollowedChannel ChannelName="dev" icon={code} />
-                        <FollowedChannel ChannelName="dev" icon={code} />
-                        <FollowedChannel ChannelName="dev" icon={code} />
-                        <FollowedChannel ChannelName="dev" icon={code} />
-                        <FollowedChannel ChannelName="dev" icon={code} />
+                        <FollowedChannel ChannelName="RELEV" icon={code} />
+                        <FollowedChannel ChannelName="RELEV" icon={code} />
+                        <FollowedChannel ChannelName="RELEV" icon={code} />
+                        <FollowedChannel ChannelName="RELEV" icon={code} />
+                        <FollowedChannel ChannelName="RELEV" icon={code} />
                     </div>
                     )}
             </div>
           
 
-          <div className="flex justify-between  items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-2 cursor-pointer text-xl">
+          <div className="flex justify-between  items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-2 cursor-pointer text-xl rounded-lg">
             <h2>Favorite</h2>
             <img src={arrow} alt="arrow" />
           </div>
         </div>
         
 
-        <div className="flex justify-between  items-center hover:bg-zinc-900 p-2 cursor-pointer">
+        <div className="flex justify-between  items-center hover:bg-zinc-900 p-2 cursor-pointer rounded-lg">
           <h2 className="text-red-700">Log out</h2>
           <img src={logout} alt="logout" />
         </div>
