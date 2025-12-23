@@ -6,6 +6,7 @@ const postSchema = new mongoose.Schema({
         required: true,
     },
     
+
 })
 
 export const Post = mongoose.model("Post", postSchema)
