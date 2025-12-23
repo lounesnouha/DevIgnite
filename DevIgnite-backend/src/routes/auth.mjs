@@ -28,8 +28,12 @@ router.post("/register", checkSchema(createUserValidationSchema),async (req,res)
         if (exists) 
             return res.status(400).json({msg: "User with this email already exists."});
 
+        const isFirstUser = (await User.countDocuments()) === 0;
+        const role = isFirstUser ? "president" : "member";
+
         const hashedPassword = await bcrypt.hash(password,10);
-        const userData = {username, email, password: hashedPassword};
+        const userData = {username, email, password: hashedPassword, role};
+
         const newUser = new User(userData);
 
         const savedUser = await newUser.save();
@@ -51,7 +55,9 @@ router.post("/register", checkSchema(createUserValidationSchema),async (req,res)
             user: {
                 id: savedUser._id,
                 username: savedUser.username,
-                email: savedUser.email
+                email: savedUser.email,
+                role: savedUser.role,
+                department: savedUser.department
             }
         });
     }catch(err){
@@ -66,7 +72,7 @@ router.post("/login", checkSchema(loginValidation), async (req,res)=>{
 
     const {email, password} = matchedData(req);
     try{
-        const findUser = await User.findOne({email});
+        const findUser = await User.findOne({email}).select("+password");
         if (!findUser) return res.status(400).json({msg: "Invalid credentials"});
 
         const isMatched = await bcrypt.compare(password, findUser.password);
@@ -90,7 +96,9 @@ router.post("/login", checkSchema(loginValidation), async (req,res)=>{
             user: {
                 id: findUser._id,
                 username: findUser.username,
-                email: findUser.email
+                email: findUser.email,
+                role: findUser.role,
+                department: findUser.department
             }
         });
     }catch(err){
