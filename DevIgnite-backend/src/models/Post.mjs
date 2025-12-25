@@ -1,12 +1,29 @@
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
-    departement: {
+    department: {
+        type: String,
+        enum: ["DEV", "UIUX", "DESIGN", "HR", "COM", "RELV"],
+        required: true,
+        index: true,
+    },
+    content: {
         type: String,
         required: true,
     },
-    
-
-})
+    image: {
+        type: String,
+        default: null,
+    },
+    likesCount:{
+        type: Number,
+        default: 0,
+        min: 0,
+    }
+},
+{
+    timestamps: true,
+}
+)
 
 export const Post = mongoose.model("Post", postSchema)

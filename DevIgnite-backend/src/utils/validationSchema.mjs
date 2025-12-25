@@ -55,3 +55,27 @@ export const tokenValidationSchema = {
         trim: true,
     }
 }
+
+export const postValidationSchema = {
+    content: {
+        notEmpty: {
+            errorMessage: "Post must not be empty",
+        },
+        isString: true,
+    },
+    image: {
+        optional: true,
+        isString: true,
+    },
+    department: {
+        notEmpty: {
+            errorMessage: "Department is required",
+        },
+        isString: true,
+        isIn: {
+            options: [["DEV", "UIUX", "DESIGN", "HR", "COM", "RELV"]],
+            errorMessage: "Department must be one of DEV, UIUX, DESIGN, HR, COM, RELV",
+        },
+    }
+}
+
