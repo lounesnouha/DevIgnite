@@ -14,12 +14,12 @@ import {User} from '../models/User.mjs';
 import { RefreshToken } from '../models/refreshToken.mjs';
 
 import {authenticateToken} from '../middleware/auth.mjs';
+import { validateRequest } from '../middleware/validationRequest.mjs'
+
 
 const router = Router();
 
-router.post("/register", checkSchema(createUserValidationSchema),async (req,res)=>{
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({error: errors.array()});
+router.post("/register", checkSchema(createUserValidationSchema), validateRequest, async (req,res)=>{
 
     const {username, email, password} = matchedData(req);
 
@@ -38,12 +38,16 @@ router.post("/register", checkSchema(createUserValidationSchema),async (req,res)
 
         const savedUser = await newUser.save();
 
-        const userPayload = {userID: savedUser._id};
+        const userPayload = {userID: savedUser._id, 
+                            role: savedUser.role, 
+                            department: savedUser.department};
         const accessToken= jwt.sign(userPayload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20min'});
         const refreshToken = jwt.sign(userPayload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'});
 
         await RefreshToken.create({
             userID: savedUser._id,
+            role: savedUser.role, 
+            department: savedUser.department,
             token: refreshToken, 
             expiresAt: new Date(Date.now() + 7*24*60*60*1000)
         })
@@ -66,10 +70,7 @@ router.post("/register", checkSchema(createUserValidationSchema),async (req,res)
     }
 })
 
-router.post("/login", checkSchema(loginValidation), async (req,res)=>{
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({error: errors.array()});
-
+router.post("/login", checkSchema(loginValidation), validateRequest,  async (req,res)=>{
     const {email, password} = matchedData(req);
     try{
         const findUser = await User.findOne({email}).select("+password");
@@ -78,13 +79,18 @@ router.post("/login", checkSchema(loginValidation), async (req,res)=>{
         const isMatched = await bcrypt.compare(password, findUser.password);
         if (!isMatched) return res.status(400).json({msg: "Invalid credentials"});
 
-        const user = {userID: findUser._id};
+        const user = {userID: findUser._id, 
+                    role: findUser.role, 
+                    department: findUser.department
+                    };
         const accessToken= jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20min'});
         const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'});
 
         await RefreshToken.deleteMany({ userID: findUser._id });
         await RefreshToken.create({
             userID: findUser._id,
+            role: findUser.role, 
+            department: findUser.department,
             token: refreshToken, 
             expiresAt: new Date(Date.now() + 7*24*60*60*1000)
         })
@@ -108,10 +114,7 @@ router.post("/login", checkSchema(loginValidation), async (req,res)=>{
 })
 
 
-router.post("/refresh", checkSchema(tokenValidationSchema),  async (req,res)=>{
-    const errors = validationResult(req);
-    if(!errors.isEmpty()) return res.status(400).json({errors: errors.array()});
-
+router.post("/refresh", checkSchema(tokenValidationSchema), validateRequest, async (req,res)=>{
     const {token} = matchedData(req);
     
     try{
@@ -124,8 +127,11 @@ router.post("/refresh", checkSchema(tokenValidationSchema),  async (req,res)=>{
 
         jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user)=>{
             if (err) return res.status(403).json({msg: "Invalid or Expired token"});
+            const userPayload = {userID: user.userID, 
+                            role: user.role, 
+                            department: user.department};
 
-            const accessToken = jwt.sign({userID: user.userID}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20m'});
+            const accessToken = jwt.sign(userPayload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20m'});
             res.status(200).json({accessToken});
         })
     }catch(err){
