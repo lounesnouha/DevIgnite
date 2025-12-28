@@ -5,7 +5,7 @@ import FollowedChannel from "./FollowedChannel";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
-// Import icons for different departments
+
 import home from '../assets/home.svg'
 import people from '../assets/people.svg'
 import design from '../assets/design.svg'
@@ -30,8 +30,6 @@ function Profile() {
       setError(null);
       
       const token = localStorage.getItem('accessToken');
-      
-      // If no token, redirect to login
       if (!token) {
         console.log('No token found, redirecting to login');
         navigate('/login');
@@ -49,14 +47,12 @@ function Profile() {
 
         if (!response.ok) {
           if (response.status === 401) {
-            // Token expired or invalid
             console.log('Token expired, redirecting to login');
             localStorage.removeItem('accessToken');
             navigate('/login');
             return;
           }
           if (response.status === 404) {
-            // User not found in database
             console.log('User not found, redirecting to signup');
             localStorage.removeItem('accessToken');
             navigate('/signup');
@@ -68,7 +64,6 @@ function Profile() {
         const data = await response.json();
         console.log('User data received:', data);
         
-        // Check if user data exists
         if (!data.user) {
           console.log('No user data returned, redirecting to signup');
           localStorage.removeItem('accessToken');
@@ -80,7 +75,6 @@ function Profile() {
       } catch (err) {
         console.error('Error fetching user info:', err);
         
-        // Network errors or server down
         if (err.message.includes('fetch') || err.message.includes('Network')) {
           setError('Cannot connect to server. Please try again later.');
         } else {
@@ -101,7 +95,6 @@ function Profile() {
     navigate('/login');
   };
 
-  // Function to get icon for each department
   const getDepartmentIcon = (department) => {
     const iconMap = {
       'DEV': code,
@@ -115,7 +108,6 @@ function Profile() {
     return iconMap[department] || code;
   };
 
-  // If user is not logged in and we're not loading, show login prompt
   if (!loading && !userInfo && !error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
@@ -181,9 +173,9 @@ function Profile() {
   return (
     <div className="font-bold flex flex-col justify-center items-center text-[#F3F7FE] p-6">
       <h1 className="text-4xl">Profile</h1>
-      <div className="flex flex-col justify-center gap-20 mt-12 w-lg max-w-2xl">   
+      <div className="flex flex-col justify-center gap-8 w-[80%]">   
         <div className="flex flex-col justify-center items-center gap-2">
-          <img src={profilePic} alt="profile" className="w-32 h-32" />
+          <img src={profilePic} alt="profile" className="w-24 h-24" />
           <h2 className="text-2xl font-black">
             {userInfo?.username || 'Username'}
           </h2>
@@ -206,7 +198,8 @@ function Profile() {
           <div className="flex flex-col justify-between w-full">
             <div 
               onClick={toggle} 
-              className="flex justify-between items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg transition-colors"
+              className="flex justify-between items-center border-b border-zinc-700
+                   hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg transition-colors"
             > 
               <h2>Following</h2>
               <img 
@@ -234,12 +227,14 @@ function Profile() {
             )}
           </div>
 
-          <div className="flex justify-between items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg mt-6">
+          <div className="flex justify-between items-center border-b border-zinc-700
+                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg ">
             <h2>Liked Posts</h2>
             <img src={arrow} alt="arrow" />
           </div>
 
-          <div className="flex justify-between items-center mb-2 border-b border-zinc-700 hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg mt-6">
+          <div className="flex justify-between items-center border-b border-zinc-700
+                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg ">
             <h2>Saved Posts</h2>
             <img src={arrow} alt="arrow" />
           </div>
@@ -247,7 +242,8 @@ function Profile() {
 
         <div 
           onClick={handleLogout}
-          className="flex justify-between items-center hover:bg-red-900/30 p-4 cursor-pointer rounded-lg transition-colors w-full border border-red-700/30"
+          className="flex justify-between items-center hover:bg-red-900/30 p-4
+           cursor-pointer rounded-lg transition-colors w-full border border-red-700/30"
         >
           <h2 className="text-red-500">Log out</h2>
           <img src={logout} alt="logout" className="w-6 h-6" />

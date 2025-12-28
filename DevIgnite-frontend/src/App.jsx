@@ -5,6 +5,7 @@ import Feed from './components/Feed';
 import Profile from './components/Profile';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import Settings from './components/Settings';
 
 function App() {
   const [selectedDepartment, setSelectedDepartment] = useState('General');
@@ -25,6 +26,7 @@ function App() {
             <Route path="/signup" element={<Signup/>}/>
             <Route path="/profile" element={<Profile />} />
             <Route path="/department/:department" element={<Feed />} />
+            <Route path="/settings" element={<Settings/>}/>
 
           </Routes>
         </div>
