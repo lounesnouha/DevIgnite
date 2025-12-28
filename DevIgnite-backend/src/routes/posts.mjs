@@ -47,6 +47,16 @@ router.get("/posts/department/:department", async (req,res)=>{
     
 })
 
+router.get("/posts/general", async (req, res)=>{
+    try{
+        const posts = await Post.find().sort({createdAt: -1});
+        res.status(200).json({posts});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg: "Server error"});
+    }
+})
+
 
 router.get("/posts/feed",authenticateToken, async (req,res)=>{
     const userID = req.user.userID;
@@ -65,6 +75,8 @@ router.get("/posts/feed",authenticateToken, async (req,res)=>{
         res.status(500).json({msg: "Server error"});
     }
 })
+
+
 
 
 router.post("/posts/:id/like", authenticateToken, async (req,res)=>{
@@ -137,38 +149,6 @@ router.post("/posts/:id/save", authenticateToken, async (req,res)=>{
     }
 })
 
-
-router.get("/posts/me/liked", authenticateToken, async (req,res)=>{
-    const userID = req.user.userID;
-
-    try{
-        const user = await User.findById(userID).populate("likedPosts");
-        if(!user) return res.status(404).json({msg: "User not found"});
-
-        if(user.likedPosts.length === 0) 
-            return res.status(200).json({msg: "You haven't liked any posts yet"});
-        else res.status(200).json({likedPosts: user.likedPosts});
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg: "Server error"});
-    }
-})
-
-router.get("/posts/me/saved", authenticateToken, async (req,res)=>{
-    const userID = req.user.userID;
-
-    try{
-        const user = await User.findById(userID).populate("savedPosts");
-        if(!user) return res.status(404).json({msg: "User not found"});
-
-        if(user.savedPosts.length === 0) 
-            return res.status(200).json({msg: "You haven't saved any posts yet"});
-        else res.status(200).json({savedPosts: user.savedPosts});
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg: "Server error"});
-    }
-})
 
 
 export default router;

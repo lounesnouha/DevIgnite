@@ -15,6 +15,7 @@ app.use(postRoute);
 import usersRoute from './routes/users.mjs';
 app.use(usersRoute);
 
+
 import connectDB from './config/db.mjs';
 connectDB();
 

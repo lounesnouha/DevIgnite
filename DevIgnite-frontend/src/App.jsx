@@ -1,15 +1,36 @@
-import './App.css'
-import Sidebar from './components/sidebar'
-import Posts from './components/Post'
-import Profile from './components/Profile'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+import Sidebar from './components/sidebar';
+import Feed from './components/Feed';
+import Profile from './components/Profile';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
 function App() {
+  const [selectedDepartment, setSelectedDepartment] = useState('General');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   return (
-    <div className='flex  bg-[#0B0E11] h-screen'>
-     {/* <Profile /> */}
-     <Sidebar></Sidebar>
-     <Posts></Posts>
-    </div>
-  )
+    <Router>
+      <div className="flex flex-row w-full bg-[#0B0E11]">
+        <Sidebar 
+          onDepartmentSelect={setSelectedDepartment} 
+          selectedDepartment={selectedDepartment}
+          isOpen={isSidebarOpen}
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+        <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'w-[70vw]' : 'w-[95vw]'}`}>
+          <Routes>
+            <Route path="/" element={<Feed department={selectedDepartment} />} />
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/signup" element={<Signup/>}/>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/department/:department" element={<Feed />} />
+
+          </Routes>
+        </div>
+      </div>
+    </Router>
+  );
 }
-export default App
+
+export default App;
