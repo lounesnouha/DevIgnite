@@ -10,13 +10,46 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const validDepartments = ["DEV", "UIUX", "DESIGN", "HR", "COM", "RELV"];
 
 
-router.get("/users/profile", authenticateToken,  async(req, res)=>{
+router.get("/me/profile", authenticateToken,  async(req, res)=>{
     const userID = req.user.userID;
     try{
         const user = await User.findById(userID);
         if (!user) return res.status(404).json({msg: "User not found"});
 
         res.status(200).json({user});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg: "Server error"});
+    }
+})
+
+
+router.get("/posts/me/liked", authenticateToken, async (req,res)=>{
+    const userID = req.user.userID;
+
+    try{
+        const user = await User.findById(userID).populate("likedPosts");
+        if(!user) return res.status(404).json({msg: "User not found"});
+
+        if(user.likedPosts.length === 0) 
+            return res.status(200).json({msg: "You haven't liked any posts yet"});
+        else res.status(200).json({likedPosts: user.likedPosts});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg: "Server error"});
+    }
+})
+
+router.get("/posts/me/saved", authenticateToken, async (req,res)=>{
+    const userID = req.user.userID;
+
+    try{
+        const user = await User.findById(userID).populate("savedPosts");
+        if(!user) return res.status(404).json({msg: "User not found"});
+
+        if(user.savedPosts.length === 0) 
+            return res.status(200).json({msg: "You haven't saved any posts yet"});
+        else res.status(200).json({savedPosts: user.savedPosts});
     }catch(err){
         console.log(err);
         res.status(500).json({msg: "Server error"});
@@ -38,7 +71,7 @@ router.put("/users/:id/role", authenticateToken, canChangeRole, async (req, res)
         return res.status(400).json({ msg: "Department is required for managers" });
     }
     if ((newRole === "manager" || newRole === "assistant_manager") && !validDepartments.includes(newDepartment))
-        return res.status(400).json({msg: "Bad request"});
+        return res.status(400).json({msg: "Department doesn't exist"});
     
     try{
         const userToChange = await User.findById(userToChangeID);
