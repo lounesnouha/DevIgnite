@@ -10,7 +10,7 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const validDepartments = ["DEV", "UIUX", "DESIGN", "HR", "COM", "RELV"];
 
 
-router.get("/me/profile", authenticateToken,  async(req, res)=>{
+router.get("/api/me/profile", authenticateToken,  async(req, res)=>{
     const userID = req.user.userID;
     try{
         const user = await User.findById(userID);
@@ -24,7 +24,7 @@ router.get("/me/profile", authenticateToken,  async(req, res)=>{
 })
 
 
-router.get("/posts/me/liked", authenticateToken, async (req,res)=>{
+router.get("/api/posts/me/liked", authenticateToken, async (req,res)=>{
     const userID = req.user.userID;
 
     try{
@@ -40,7 +40,7 @@ router.get("/posts/me/liked", authenticateToken, async (req,res)=>{
     }
 })
 
-router.get("/posts/me/saved", authenticateToken, async (req,res)=>{
+router.get("/api/posts/me/saved", authenticateToken, async (req,res)=>{
     const userID = req.user.userID;
 
     try{
@@ -56,7 +56,7 @@ router.get("/posts/me/saved", authenticateToken, async (req,res)=>{
     }
 })
 
-router.put("/users/:id/role", authenticateToken, canChangeRole, async (req, res)=>{
+router.put("/api/users/:id/role", authenticateToken, canChangeRole, async (req, res)=>{
     const {id: userToChangeID} = req.params;
 
     if (!isValidObjectId(userToChangeID)) {
@@ -108,7 +108,7 @@ router.put("/users/:id/role", authenticateToken, canChangeRole, async (req, res)
     }
 })
 
-router.post("/users/follow/:department", authenticateToken, async (req, res) => {
+router.post("/api/users/follow/:department", authenticateToken, async (req, res) => {
     const { department } = req.params;
     const userID = req.user.userID;
     

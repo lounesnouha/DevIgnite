@@ -69,9 +69,9 @@ function Feed({department}){
       setError(null);
       let endpoint = '';
       if (department === "General") {
-        endpoint = '/posts/general';
+        endpoint = '/api/posts/general';
       } else if (department) {
-        endpoint = `/posts/department/${department}`;
+        endpoint = `/api/posts/department/${department}`;
       } else {
         setLoading(false);
         return;
@@ -107,7 +107,7 @@ function Feed({department}){
 
   const handleLike = async (postId)=>{
     try{
-      const response = await fetch(`/posts/${postId}/like`,
+      const response = await fetch(`/api/posts/${postId}/like`,
         {
           method: 'POST',
           headers: {
@@ -135,7 +135,7 @@ function Feed({department}){
 
   const handleSave = async (postId) => {
     try {
-      const response = await fetch(`/posts/${postId}/save`, {
+      const response = await fetch(`/api/posts/${postId}/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

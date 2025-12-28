@@ -19,7 +19,7 @@ import { validateRequest } from '../middleware/validationRequest.mjs'
 
 const router = Router();
 
-router.post("/register", checkSchema(createUserValidationSchema), validateRequest, async (req,res)=>{
+router.post("/api/register", checkSchema(createUserValidationSchema), validateRequest, async (req,res)=>{
 
     const {username, email, password} = matchedData(req);
 
@@ -70,7 +70,7 @@ router.post("/register", checkSchema(createUserValidationSchema), validateReques
     }
 })
 
-router.post("/login", checkSchema(loginValidation), validateRequest,  async (req,res)=>{
+router.post("/api/login", checkSchema(loginValidation), validateRequest,  async (req,res)=>{
     const {email, password} = matchedData(req);
     try{
         const findUser = await User.findOne({email}).select("+password");
@@ -114,7 +114,7 @@ router.post("/login", checkSchema(loginValidation), validateRequest,  async (req
 })
 
 
-router.post("/refresh", checkSchema(tokenValidationSchema), validateRequest, async (req,res)=>{
+router.post("/api/refresh", checkSchema(tokenValidationSchema), validateRequest, async (req,res)=>{
     const {token} = matchedData(req);
     
     try{
@@ -140,7 +140,7 @@ router.post("/refresh", checkSchema(tokenValidationSchema), validateRequest, asy
     }
 })
 
-router.post("/logout", authenticateToken, async (req,res)=>{
+router.post("/api/logout", authenticateToken, async (req,res)=>{
     try{
         const deleted = await RefreshToken.deleteOne({ userID: req.user.userID });
         if (deleted.deletedCount === 0) 

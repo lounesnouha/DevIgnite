@@ -15,7 +15,7 @@ const router = Router();
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-router.post("/post",authenticateToken, 
+router.post("/api/post",authenticateToken, 
     checkSchema(postValidationSchema), validateRequest,
     canCreatePost,
     async (req, res)=>{
@@ -30,7 +30,7 @@ router.post("/post",authenticateToken,
         }
 })
 
-router.get("/posts/department/:department", async (req,res)=>{
+router.get("/api/posts/department/:department", async (req,res)=>{
     const { department } = req.params;
     const validDepartments = ["DEV", "UIUX", "DESIGN", "HR", "COM", "RELV"];
 
@@ -47,7 +47,7 @@ router.get("/posts/department/:department", async (req,res)=>{
     
 })
 
-router.get("/posts/general", async (req, res)=>{
+router.get("/api/posts/general", async (req, res)=>{
     try{
         const posts = await Post.find().sort({createdAt: -1});
         res.status(200).json({posts});
@@ -58,7 +58,7 @@ router.get("/posts/general", async (req, res)=>{
 })
 
 
-router.get("/posts/feed",authenticateToken, async (req,res)=>{
+router.get("/api/posts/feed",authenticateToken, async (req,res)=>{
     const userID = req.user.userID;
     try{
         const user = await User.findById(userID);
@@ -79,7 +79,7 @@ router.get("/posts/feed",authenticateToken, async (req,res)=>{
 
 
 
-router.post("/posts/:id/like", authenticateToken, async (req,res)=>{
+router.post("/api/posts/:id/like", authenticateToken, async (req,res)=>{
     const { id: postID } = req.params;
     const userID = req.user.userID; 
 
@@ -118,7 +118,7 @@ router.post("/posts/:id/like", authenticateToken, async (req,res)=>{
 })
 
 
-router.post("/posts/:id/save", authenticateToken, async (req,res)=>{
+router.post("/api/posts/:id/save", authenticateToken, async (req,res)=>{
     const { id: postID } = req.params;
     const userID = req.user.userID;
 
