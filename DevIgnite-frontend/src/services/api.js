@@ -19,3 +19,36 @@ export const fetchPostsByDepartment = async (department) => {
     throw error;
   }
 };
+
+
+
+export async function authFetch(url, options = {}) {
+  let accessToken = localStorage.getItem("accessToken");
+
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    const refreshed = await refreshAccessToken();
+    if (!refreshed) throw new Error("Session expired");
+
+    accessToken = localStorage.getItem("accessToken");
+
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  return res;
+}
