@@ -9,6 +9,7 @@ import Design from '../assets/design.svg'
 import Comm from '../assets/comm.svg'
 import Layer from '../assets/layer.svg'
 import Code from '../assets/code.svg'
+import followings from '../assets/followings.svg';
 
 const Section = ({ icon, department, onClick, isOpen }) => {
   return (
@@ -16,7 +17,7 @@ const Section = ({ icon, department, onClick, isOpen }) => {
       onClick={onClick}
       className='cursor-pointer w-full hover:bg-zinc-900
             flex vflex-row justify-start items-center gap-4 py-2'>
-      <img src={icon} alt="icon" className='pl-2' />
+      <img src={icon} alt="icon" className='w-8 h-8' />
       {isOpen && (
         <p className='text-white font-bold whitespace-nowrap'>{department}</p>
       )}
@@ -36,6 +37,7 @@ function Sidebar({ onDepartmentSelect }){
     { id: 'HR', name: 'Human Resources', icon: People },
     { id: 'COM', name: 'Communications', icon: Comm },
     { id: 'RELV', name: 'Relev', icon: People },
+    {id: 'Followings', name: 'Followings', icon: followings}
   ];
 
   const toggleSidebar = () => {
@@ -43,7 +45,6 @@ function Sidebar({ onDepartmentSelect }){
   };
 
   const handleDepartmentClick = (departmentId) => {
-    // This will now work because onDepartmentSelect is received as prop
     if (onDepartmentSelect) {
       onDepartmentSelect(departmentId);
     }

@@ -4,6 +4,7 @@ import save from '../assets/save.svg';
 import like_button from '../assets/like.svg';
 import imgBlank from '../assets/imgBlank.svg';
 import pfp from '../assets/pfp.svg';  
+import { authFetch } from '../utils/auth';
 
 function PostCard({dep, content, img, likes, time, onLike}){
 
@@ -70,16 +71,27 @@ function Feed({department}){
       let endpoint = '';
       if (department === "General") {
         endpoint = '/api/posts/general';
-      } else if (department) {
+      } else if (department === "Followings"){
+        endpoint = '/api/posts/feed';
+      }
+      else if (department) {
         endpoint = `/api/posts/department/${department}`;
       } else {
         setLoading(false);
         return;
       }
       try{
-        const response = await fetch(endpoint);
+        let response;
+        if (endpoint === '/api/posts/feed'){
+          response = await authFetch(endpoint);
+        }else{
+          response = await fetch(endpoint);
+        }
 
         if (!response.ok) {
+          if (response.status === 401){
+            throw new Error('Please log into your account to see your followings feed')
+          }
           if (response.status === 400) {
             throw new Error('Invalid department');
           }
@@ -123,7 +135,6 @@ function Feed({department}){
             : post
         ));
       } else if (response.status === 401) {
-        // Token expired, redirect to login
         navigate('/login');
       }
     }catch(err){
@@ -143,10 +154,8 @@ function Feed({department}){
         }
       });
       if (response.ok) {
-        // You can add visual feedback for saved posts
       }
        else if (response.status === 401) {
-        // Token expired, redirect to login
         navigate('/login');
       }
     } catch (error) {
@@ -166,7 +175,7 @@ function Feed({department}){
 
   if (error) {
     return (
-      <div>
+      <div className='flex flex-col'>
         <button 
           className='flex justify-end mt-10 mr-10'
           onClick={() => navigate('/profile')}
@@ -197,6 +206,7 @@ function Feed({department}){
         <img src={pfp} alt="Profile" />
       </button>
 
+      <h1 className='font-[quicksand] text-center font-bold text-3xl'>{department}</h1>
       <div className="flex flex-col w-full justify-center items-center gap-4">
         {posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
