@@ -4,8 +4,10 @@ import save from '../assets/save.svg';
 import like_button from '../assets/like.svg';
 import imgBlank from '../assets/imgBlank.svg';
 import pfp from '../assets/pfp.svg';  
+import add_button from '../assets/add.svg';
+import { authFetch } from '../utils/auth';
 
-function PostCard({dep, content, img, likes, time, onLike}){
+function PostCard({dep, content, img, likes, time, onLike, onSave}){
 
   const formatTime = (timestamp) => {
     try {
@@ -47,7 +49,7 @@ function PostCard({dep, content, img, likes, time, onLike}){
           </button>
           <p className='text-2xl'>{likes}</p>
         </div>
-        <button>
+        <button onClick={onSave}>
           <img className='w-8 h-8' src={save} alt="Save" />
         </button>
       </div>
@@ -70,16 +72,31 @@ function Feed({department}){
       let endpoint = '';
       if (department === "General") {
         endpoint = '/api/posts/general';
-      } else if (department) {
+      } else if (department === "Followings"){
+        endpoint = '/api/posts/feed';
+      }else if(department === "Liked"){
+        endpoint = '/api/posts/me/liked';
+      }else if(department === "Saved"){
+        endpoint = '/api/posts/me/saved';
+      }
+      else if (department) {
         endpoint = `/api/posts/department/${department}`;
       } else {
         setLoading(false);
         return;
       }
       try{
-        const response = await fetch(endpoint);
+        let response;
+        if (endpoint === '/api/posts/feed' || endpoint === '/api/posts/me/liked' || endpoint === '/api/posts/me/saved'){
+          response = await authFetch(endpoint);
+        }else{
+          response = await fetch(endpoint);
+        }
 
         if (!response.ok) {
+          if (response.status === 401){
+            throw new Error('Please log into your account to see your followings feed')
+          }
           if (response.status === 400) {
             throw new Error('Invalid department');
           }
@@ -123,7 +140,6 @@ function Feed({department}){
             : post
         ));
       } else if (response.status === 401) {
-        // Token expired, redirect to login
         navigate('/login');
       }
     }catch(err){
@@ -143,16 +159,18 @@ function Feed({department}){
         }
       });
       if (response.ok) {
-        // You can add visual feedback for saved posts
       }
        else if (response.status === 401) {
-        // Token expired, redirect to login
         navigate('/login');
       }
     } catch (error) {
       console.error('Error saving post:', error);
     }
   };
+
+  const handleAdd = ()=>{
+    navigate('/addPost');
+  }
 
   
   if (loading) {
@@ -166,7 +184,7 @@ function Feed({department}){
 
   if (error) {
     return (
-      <div>
+      <div className='flex flex-col'>
         <button 
           className='flex justify-end mt-10 mr-10'
           onClick={() => navigate('/profile')}
@@ -190,13 +208,20 @@ function Feed({department}){
 
   return(
     <div className='flex flex-col w-full justify-center items-center gap-8 '>
-      <button 
-        className='flex self-end mt-10 mr-10'
-        onClick={() => navigate('/profile')}
-      >
-        <img src={pfp} alt="Profile" />
-      </button>
+      
+      <div className='flex flex-row justify-between w-full items-center p-4'>
+        <button className='w-12 h-12' onClick={() => handleAdd()}>
+          <img src={add_button} alt="Add post" ></img>
+        </button>
+        <button 
+          className='w-12 h-12'
+          onClick={() => navigate('/profile')}
+        >
+          <img src={pfp} alt="Profile" />
+        </button>
+      </div>
 
+      <h1 className='font-[quicksand] text-center font-bold text-3xl'>{department}</h1>
       <div className="flex flex-col w-full justify-center items-center gap-4">
         {posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
@@ -218,7 +243,8 @@ function Feed({department}){
               img={post.image || imgBlank}
               likes={post.likesCount || 0}
               time={post.createdAt}
-              onLike={() => handleLike(post._id)}/>
+              onLike={() => handleLike(post._id)}
+              onSave={() => handleSave(post._id)}/>
           ))
         )}
       </div>

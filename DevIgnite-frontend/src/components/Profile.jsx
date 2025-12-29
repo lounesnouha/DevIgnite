@@ -1,9 +1,11 @@
 import arrow from "../assets/arrow-up.svg";
 import profilePic from "../assets/Ellipse 1.svg";
-import logout from "../assets/logout.svg";
+import logoutButton from "../assets/logout.svg";
 import FollowedChannel from "./FollowedChannel";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+
+import { logout, authFetch, setupTokenRefresh, refreshAccessToken } from '../utils/auth.js'
 
 
 import home from '../assets/home.svg'
@@ -25,6 +27,11 @@ function Profile() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const cleanup = setupTokenRefresh();
+    return cleanup;
+  }, []);
+
+  useEffect(() => {
     const getUser = async () => {
       setLoading(true);
       setError(null);
@@ -37,11 +44,10 @@ function Profile() {
       }
 
       try {
-        const response = await fetch('/api/me/profile', {
+        const response = await authFetch('/api/me/profile', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           }
         });
 
@@ -49,12 +55,16 @@ function Profile() {
           if (response.status === 401) {
             console.log('Token expired, redirecting to login');
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
             navigate('/login');
             return;
           }
           if (response.status === 404) {
             console.log('User not found, redirecting to signup');
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
             navigate('/signup');
             return;
           }
@@ -67,6 +77,8 @@ function Profile() {
         if (!data.user) {
           console.log('No user data returned, redirecting to signup');
           localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
           navigate('/signup');
           return;
         }
@@ -74,9 +86,15 @@ function Profile() {
         setUserInfo(data.user);
       } catch (err) {
         console.error('Error fetching user info:', err);
-        
+
         if (err.message.includes('fetch') || err.message.includes('Network')) {
           setError('Cannot connect to server. Please try again later.');
+        } else if (err.message.includes('token') || err.message.includes('auth')) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          navigate('/login');
+          return;
         } else {
           setError(err.message);
         }
@@ -90,9 +108,16 @@ function Profile() {
     getUser();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      navigate('/login');
+    }
   };
 
   const getDepartmentIcon = (department) => {
@@ -169,7 +194,6 @@ function Profile() {
     );
   }
 
-  // Only show profile if userInfo exists
   return (
     <div className="font-bold flex flex-col justify-center items-center text-[#F3F7FE] p-6">
       <h1 className="text-4xl">Profile</h1>
@@ -227,17 +251,19 @@ function Profile() {
             )}
           </div>
 
-          <div className="flex justify-between items-center border-b border-zinc-700
-                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg ">
+          <button className="flex justify-between items-center border-b border-zinc-700
+                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg w-full"
+                  onClick={()=> navigate('/liked')}>
             <h2>Liked Posts</h2>
             <img src={arrow} alt="arrow" />
-          </div>
+          </button>
 
-          <div className="flex justify-between items-center border-b border-zinc-700
-                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg ">
+          <button className="flex justify-between items-center border-b border-zinc-700
+                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg w-full"
+               onClick={()=> navigate('/saved')}>
             <h2>Saved Posts</h2>
             <img src={arrow} alt="arrow" />
-          </div>
+          </button>
         </div>
 
         <div 
@@ -246,7 +272,7 @@ function Profile() {
            cursor-pointer rounded-lg transition-colors w-full border border-red-700/30"
         >
           <h2 className="text-red-500">Log out</h2>
-          <img src={logout} alt="logout" className="w-6 h-6" />
+          <img src={logoutButton} alt="logout" className="w-6 h-6" />
         </div>
       </div>
     </div>

@@ -19,3 +19,5 @@ export const fetchPostsByDepartment = async (department) => {
     throw error;
   }
 };
+
+

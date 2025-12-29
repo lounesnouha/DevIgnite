@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { authFetch } from "../utils/auth";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function Login() {
     setSuccess('');
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await authFetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,53 +35,19 @@ function Login() {
         body: JSON.stringify(formData)
       });
 
-      console.log('🔍 Response status:', response.status);
-      console.log('🔍 Response URL:', response.url);
-      console.log('🔍 Response headers:', response.headers.get('content-type'));
-
-      // First, get the raw text to see what we're receiving
       const rawText = await response.text();
-      console.log('🔍 Raw response (first 300 chars):', rawText.substring(0, 300));
-
-      // Check if we got HTML (proxy failed)
-      if (rawText.trim().startsWith('<!doctype') || rawText.includes('CseHub') || rawText.includes('<html')) {
-        throw new Error(`
-          ⚠️ PROXY ISSUE DETECTED!
-          
-          Your proxy isn't working. You're getting the React app HTML instead of API JSON.
-          
-          Quick fixes:
-          1. Check your vite.config.js proxy config
-          2. Or use absolute URL: http://localhost:5000/api/login
-          3. Make sure backend is running on port 5000
-          
-          What you should see at: http://localhost:5000/api/login
-          → JSON like: {"msg":"Bad request"}
-          
-          What you're getting:
-          → HTML page (React app)
-        `);
-      }
-
-      // Check if empty response
-      if (!rawText || rawText.trim() === '') {
-        throw new Error('Server returned empty response. Check backend logs.');
-      }
-
-      // Try to parse as JSON
       let data;
+      
       try {
         data = JSON.parse(rawText);
-      } catch (parseError) {
-        console.error('❌ JSON parse error:', parseError);
-        throw new Error(`Invalid JSON from server. Response: ${rawText.substring(0, 100)}...`);
+      } catch {
+        throw new Error('Invalid response from server');
       }
 
       if (!response.ok) {
-        throw new Error(data.msg || `Login failed: ${response.status}`);
+        throw new Error(data.msg || 'Login failed');
       }
 
-      // Store tokens and user data
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -88,11 +55,10 @@ function Login() {
       setSuccess('Login successful! Redirecting...');
       
       setTimeout(() => {
-        navigate('/');
+        navigate('/profile');
       }, 1500);
 
     } catch (err) {
-      console.error('❌ Login error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -105,7 +71,7 @@ function Login() {
     
       {error && (
         <div className="p-4 bg-red-900/30 border border-red-700 rounded-2xl max-w-md">
-          <p className="text-red-400 text-lg font-medium whitespace-pre-line">{error}</p>
+          <p className="text-red-400 text-lg font-medium">{error}</p>
         </div>
       )}
       
@@ -151,12 +117,12 @@ function Login() {
         <div className="text-center">
           <p className="text-gray-400 font-[quicksand]">
             Don't have an account?{' '}
-            <Link 
-              to="/signup" 
+            <button 
+              onClick={()=>navigate("/signup")}
               className="text-amber-300 hover:text-amber-400 font-bold transition-colors"
             >
               Sign up
-            </Link>
+            </button>
           </p>
         </div>
       </div>
