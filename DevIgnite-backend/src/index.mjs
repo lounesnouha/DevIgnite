@@ -1,10 +1,18 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+
+import { User } from './models/User.mjs';
+import notificationRoutes from './routes/notifications.mjs';
+
+import cors from 'cors';
+
 import express from 'express';
 const app = express();
 
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 import authRoute from './routes/auth.mjs';
 app.use(authRoute);
@@ -24,3 +32,5 @@ app.get("/", (req,res)=>{
 })
 
 app.listen(process.env.PORT);
+
+app.use('/api/notifications', notificationRoutes);

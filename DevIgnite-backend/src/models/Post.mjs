@@ -19,7 +19,19 @@ const postSchema = new mongoose.Schema({
         type: Number,
         default: 0,
         min: 0,
-    }
+    },
+    notificationsSent: {
+    type: Boolean,
+    default: false,
+    },
+    notificationSentAt: {
+    type: Date,
+    default: null,
+},
+recipientCount: {
+  type: Number,
+  default: 0,
+}
 },
 {
     timestamps: true,
