@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authFetch } from "../utils/auth";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function Login() {
     setSuccess('');
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await authFetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
