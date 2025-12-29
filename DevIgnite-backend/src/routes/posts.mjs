@@ -150,5 +150,37 @@ router.post("/api/posts/:id/save", authenticateToken, async (req,res)=>{
 })
 
 
+router.get("/api/posts/me/liked", authenticateToken, async (req,res)=>{
+    const userID = req.user.userID;
+
+    try{
+        const user = await User.findById(userID).populate("likedPosts");
+        if(!user) return res.status(404).json({msg: "User not found"});
+
+        if(user.likedPosts.length === 0) 
+            return res.status(200).json({msg: "You haven't liked any posts yet"});
+        else res.status(200).json({posts: user.likedPosts});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg: "Server error"});
+    }
+})
+
+router.get("/api/posts/me/saved", authenticateToken, async (req,res)=>{
+    const userID = req.user.userID;
+    try{
+        const user = await User.findById(userID).populate("savedPosts");
+        if(!user) return res.status(404).json({msg: "User not found"});
+
+        if(user.savedPosts.length === 0) 
+            return res.status(200).json({msg: "You haven't saved any posts yet"});
+        else res.status(200).json({posts: user.savedPosts});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg: "Server error"});
+    }
+})
+
+
 
 export default router;

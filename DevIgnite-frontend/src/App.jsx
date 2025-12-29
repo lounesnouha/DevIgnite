@@ -15,9 +15,6 @@ function App() {
       <div className="flex flex-row w-full bg-[#0B0E11]">
         <Sidebar 
           onDepartmentSelect={setSelectedDepartment} 
-          selectedDepartment={selectedDepartment}
-          isOpen={isSidebarOpen}
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         />
         <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'w-[70vw]' : 'w-[95vw]'}`}>
           <Routes>
@@ -27,7 +24,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/department/:department" element={<Feed />} />
             <Route path="/settings" element={<Settings/>}/>
-
+            <Route path="/liked" element={<Feed department="Liked"/>}/>
+            <Route path="/saved" element={<Feed department="Saved"/>}/>
           </Routes>
         </div>
       </div>
