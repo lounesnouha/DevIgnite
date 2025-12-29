@@ -6,7 +6,7 @@ import imgBlank from '../assets/imgBlank.svg';
 import pfp from '../assets/pfp.svg';  
 import { authFetch } from '../utils/auth';
 
-function PostCard({dep, content, img, likes, time, onLike}){
+function PostCard({dep, content, img, likes, time, onLike, onSave}){
 
   const formatTime = (timestamp) => {
     try {
@@ -48,7 +48,7 @@ function PostCard({dep, content, img, likes, time, onLike}){
           </button>
           <p className='text-2xl'>{likes}</p>
         </div>
-        <button>
+        <button onClick={onSave}>
           <img className='w-8 h-8' src={save} alt="Save" />
         </button>
       </div>
@@ -73,6 +73,10 @@ function Feed({department}){
         endpoint = '/api/posts/general';
       } else if (department === "Followings"){
         endpoint = '/api/posts/feed';
+      }else if(department === "Liked"){
+        endpoint = '/api/posts/me/liked';
+      }else if(department === "Saved"){
+        endpoint = '/api/posts/me/saved';
       }
       else if (department) {
         endpoint = `/api/posts/department/${department}`;
@@ -82,7 +86,7 @@ function Feed({department}){
       }
       try{
         let response;
-        if (endpoint === '/api/posts/feed'){
+        if (endpoint === '/api/posts/feed' || endpoint === '/api/posts/me/liked' || endpoint === '/api/posts/me/saved'){
           response = await authFetch(endpoint);
         }else{
           response = await fetch(endpoint);
@@ -228,7 +232,8 @@ function Feed({department}){
               img={post.image || imgBlank}
               likes={post.likesCount || 0}
               time={post.createdAt}
-              onLike={() => handleLike(post._id)}/>
+              onLike={() => handleLike(post._id)}
+              onSave={() => handleSave(post._id)}/>
           ))
         )}
       </div>

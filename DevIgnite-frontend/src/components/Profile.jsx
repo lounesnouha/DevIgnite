@@ -251,17 +251,19 @@ function Profile() {
             )}
           </div>
 
-          <div className="flex justify-between items-center border-b border-zinc-700
-                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg ">
+          <button className="flex justify-between items-center border-b border-zinc-700
+                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg w-full"
+                  onClick={()=> navigate('/liked')}>
             <h2>Liked Posts</h2>
             <img src={arrow} alt="arrow" />
-          </div>
+          </button>
 
-          <div className="flex justify-between items-center border-b border-zinc-700
-                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg ">
+          <button className="flex justify-between items-center border-b border-zinc-700
+                         hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg w-full"
+               onClick={()=> navigate('/saved')}>
             <h2>Saved Posts</h2>
             <img src={arrow} alt="arrow" />
-          </div>
+          </button>
         </div>
 
         <div 
