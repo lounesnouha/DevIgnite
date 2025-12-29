@@ -4,6 +4,7 @@ import save from '../assets/save.svg';
 import like_button from '../assets/like.svg';
 import imgBlank from '../assets/imgBlank.svg';
 import pfp from '../assets/pfp.svg';  
+import add_button from '../assets/add.svg';
 import { authFetch } from '../utils/auth';
 
 function PostCard({dep, content, img, likes, time, onLike, onSave}){
@@ -167,6 +168,10 @@ function Feed({department}){
     }
   };
 
+  const handleAdd = ()=>{
+    navigate('/addPost');
+  }
+
   
   if (loading) {
     return (
@@ -203,12 +208,18 @@ function Feed({department}){
 
   return(
     <div className='flex flex-col w-full justify-center items-center gap-8 '>
-      <button 
-        className='flex self-end mt-10 mr-10'
-        onClick={() => navigate('/profile')}
-      >
-        <img src={pfp} alt="Profile" />
-      </button>
+      
+      <div className='flex flex-row justify-between w-full items-center p-4'>
+        <button className='w-12 h-12' onClick={() => handleAdd()}>
+          <img src={add_button} alt="Add post" ></img>
+        </button>
+        <button 
+          className='w-12 h-12'
+          onClick={() => navigate('/profile')}
+        >
+          <img src={pfp} alt="Profile" />
+        </button>
+      </div>
 
       <h1 className='font-[quicksand] text-center font-bold text-3xl'>{department}</h1>
       <div className="flex flex-col w-full justify-center items-center gap-4">
