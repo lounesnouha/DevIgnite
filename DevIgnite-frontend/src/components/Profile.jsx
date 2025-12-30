@@ -140,6 +140,8 @@ function Profile() {
     return iconMap[department] || code;
   };
 
+  const canChangeRoles = userInfo?.role === 'president' || userInfo?.role === 'vice_president';
+
   if (!loading && !userInfo && !error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
@@ -226,6 +228,16 @@ function Profile() {
         </div>
 
         <div className="w-full">
+          {canChangeRoles && (
+            <button 
+              onClick={() => navigate('/change-role')}
+              className="flex justify-between items-center border-b border-zinc-700 hover:bg-zinc-900 p-4 cursor-pointer text-xl rounded-lg w-full mb-4"
+            >
+              <h2 className="text-amber-300">Change User Role</h2>
+              <img src={arrow} alt="arrow" />
+            </button>
+          )}
+
           <div className="flex flex-col justify-between w-full">
             <div 
               onClick={toggle} 

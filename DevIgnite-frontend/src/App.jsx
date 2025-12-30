@@ -7,6 +7,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Settings from './components/Settings';
 import AddPost from './components/AddPost';
+import ChangeRole from './components/ChangeRole';
 
 function App() {
   const [selectedDepartment, setSelectedDepartment] = useState('General');
@@ -28,6 +29,7 @@ function App() {
             <Route path="/liked" element={<Feed department="Liked"/>}/>
             <Route path="/saved" element={<Feed department="Saved"/>}/>
             <Route path="/addPost" element={<AddPost department={selectedDepartment}/>}/>
+            <Route path="/change-role" element={<ChangeRole/>}/>
           </Routes>
         </div>
       </div>
