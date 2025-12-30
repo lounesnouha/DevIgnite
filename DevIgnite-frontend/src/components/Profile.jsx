@@ -4,16 +4,13 @@ import logoutButton from "../assets/logout.svg";
 import FollowedChannel from "./FollowedChannel";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-
-import { logout, authFetch, setupTokenRefresh, refreshAccessToken } from '../utils/auth.js'
-
-
-import home from '../assets/home.svg'
-import people from '../assets/people.svg'
-import design from '../assets/design.svg'
-import comm from '../assets/comm.svg'
-import layer from '../assets/layer.svg'
-import code from '../assets/code.svg'
+import { logout, authFetch, setupTokenRefresh } from '../utils/auth.js';
+import home from '../assets/home.svg';
+import people from '../assets/people.svg';
+import design from '../assets/design.svg';
+import comm from '../assets/comm.svg';
+import layer from '../assets/layer.svg';
+import code from '../assets/code.svg';
 
 function Profile() {
   const navigate = useNavigate();
@@ -107,6 +104,16 @@ function Profile() {
     
     getUser();
   }, [navigate]);
+
+  const handleUnfollow = (unfollowedDept) => {
+    setUserInfo(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        followedDepartments: prev.followedDepartments.filter(dept => dept !== unfollowedDept)
+      };
+    });
+  };
 
   const handleLogout = async () => {
     try {
@@ -240,6 +247,7 @@ function Profile() {
                       key={index}
                       ChannelName={dept}
                       icon={getDepartmentIcon(dept)}
+                      onUnfollow={handleUnfollow}
                     />
                   ))
                 ) : (
