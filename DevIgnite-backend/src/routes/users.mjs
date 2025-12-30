@@ -9,7 +9,6 @@ const router = Router();
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const validDepartments = ["DEV", "UIUX", "DESIGN", "HR", "COM", "RELV"];
 
-
 router.get("/api/me/profile", authenticateToken,  async(req, res)=>{
     const userID = req.user.userID;
     try{
@@ -22,6 +21,36 @@ router.get("/api/me/profile", authenticateToken,  async(req, res)=>{
         res.status(500).json({msg: "Server error"});
     }
 })
+
+// Add this to your user routes
+router.get("/api/users", authenticateToken, async (req, res) => {
+  const { email } = req.query;
+  
+  if (!email) {
+    return res.status(400).json({ msg: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email }).select('-password -__v');
+    
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    const userResponse = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      department: user.department,
+      followedDepartments: user.followedDepartments || []
+    };
+
+    res.json({ user: userResponse });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
 
 
 router.put("/api/users/:id/role", authenticateToken, canChangeRole, async (req, res)=>{
